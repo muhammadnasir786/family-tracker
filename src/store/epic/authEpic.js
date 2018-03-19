@@ -2,15 +2,16 @@
 
 import { Observable } from 'rxjs'
 import  AuthAction from "../actions/authAction";
+import FTAction from "../actions/FTAction";
 
 import * as firebase from 'firebase';
 var config = {
-    apiKey: "AIzaSyDqPpxlIGjEikoqzvZqB7_-10158KdfxOs",
-    authDomain: "reactreduxtodoappfirebase.firebaseapp.com",
-    databaseURL: "https://reactreduxtodoappfirebase.firebaseio.com",
-    projectId: "reactreduxtodoappfirebase",
+    apiKey: "AIzaSyCvHYXcKCp9din8zSyPS8J9oLQ3t9DtOI8",
+    authDomain: "family-tracker-4e017.firebaseapp.com",
+    databaseURL: "https://family-tracker-4e017.firebaseio.com",
+    projectId: "family-tracker-4e017",
     storageBucket: "",
-    messagingSenderId: "866095779438"
+    messagingSenderId: "635982839964"
   };
 firebase.initializeApp(config);
 
@@ -19,6 +20,74 @@ const auth = firebase.auth();
 // let userData ;
 
 class AuthEpic {
+
+
+    static addCircle = (action$) => {
+        return action$.ofType(FTAction.ADD_CIRCLE)
+            .switchMap(({ payload }) => {
+                return Observable.fromPromise(
+                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/`).push(payload).then(() => {
+                        return { type: 'NULL' }
+                    })
+                )
+            })
+    }
+    static addMember = (action$) => {
+        return action$.ofType(FTAction.ADD_MEMBER)
+            .switchMap(({ payload }) => {
+                return Observable.fromPromise(
+                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/${payload.circleKey}/member/`).push(payload.memberObj).then(() => {
+                        return { type: 'NULL' }
+                    })
+                )
+            })
+    }
+    static updateLocation = (action$) => {
+        return action$.ofType(FTAction.UPDATE_LOCATION)
+            .switchMap(({ payload }) => {
+                return Observable.fromPromise(
+                    ref.child(`/users/${firebase.auth().currentUser.uid}/location/`).set(payload).then(() => {
+                        return { type: 'NULL' }
+                    })
+                )
+            })
+    }
+    static accepted = (action$) => {
+        return action$.ofType(FTAction.ACCEPTED)
+            .switchMap(({ payload }) => {
+                return Observable.fromPromise(
+                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/${payload.circleKey}/member/${payload.memberKey}/isAccepted/`).set(true).then(() => {
+                        return { type: 'NULL' }
+                    })
+                )
+            })
+    }
+    static getUsers = (action$) => {
+        return action$.ofType(FTAction.GET_USERS)
+            .switchMap(({ payload }) => {
+                return new Observable((observer) => {
+                    ref.child(`users/`).on('child_added', (s) => {
+                        observer.next({
+                            type: FTAction.GET_USER_ADD,
+                            payload: {
+                                key: s.key,
+                                userDetails: s.val()
+                            }
+                        })
+                    })
+                    ref.child(`users/`).on('child_changed', (s) => {
+                        observer.next({
+                            type: FTAction.GET_USER_UPDATE,
+                            payload: {
+                                key: s.key,
+                                userDetails: s.val()
+                            }
+                        })
+                    })
+                })
+            })
+    }
+
 
         static createUser = (action$)=>{
             let userCreated = false;
@@ -44,7 +113,6 @@ class AuthEpic {
                 })
             })
         }
-
         static loginUser = (action$)=>{
             let authenticate = false;
             return action$.ofType(AuthAction.LOGIN_USER)

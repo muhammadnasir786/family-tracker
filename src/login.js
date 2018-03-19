@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { AsyncStorage } from 'react-native';
 import {
+
     Container, Header, Content, Card, CardItem, Text, Body,
     Item, Input, Icon, Button
 } from 'native-base';
@@ -17,9 +19,10 @@ class Login extends Component {
     static navigationOptions = {
         title: 'Access Your Account',
     };
-    // componentWillReceiveProps(nextProps){
-    //     nextProps.isLogin === true ? this.props.navigation.navigate('MainApplication') : null
-    // }
+    componentWillReceiveProps = async  (nextProps)=> {
+        nextProps.isLogin === true ? this.props.navigation.navigate('App') : null
+        await AsyncStorage.setItem('userToken', 'abc');
+    }
 
     render() {
         // this.props.isLogin === true ? this.props.navigation.navigate('MainApplication') : null
