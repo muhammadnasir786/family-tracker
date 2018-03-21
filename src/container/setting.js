@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native'
 import { Container, Header, Content, Button, Text } from 'native-base';
-export default class Setting extends Component {
+import { connect } from 'react-redux';
+import FTAction from '../store/actions/FTAction';
+class Setting extends Component {
   render() {
     return (
       <Container>
@@ -9,15 +11,20 @@ export default class Setting extends Component {
           <Button danger onPress={() => {
             AsyncStorage.clear();
             this.props.navigation.navigate('Auth');
-
           }}><Text> Logout </Text></Button>
         </Content>
       </Container>
     );
   }
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    // alert()
-    // this.props.navigation.navigate('Auth');
-  };
 }
+let mapStateToProps = (state) => {
+  return {
+
+  }
+}
+let mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => { dispatch({ type: 'LOGOUT' }) }
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Setting)

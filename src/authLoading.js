@@ -6,7 +6,8 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-
+import * as firbase from 'firebase'
+import { connect } from 'react-redux';
 class AuthLoadingScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -15,11 +16,15 @@ class AuthLoadingScreen extends React.Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    const userToken = await AsyncStorage.getItem('userToken');
+    // AsyncStorage.setItem('uid','asd')
+    // AsyncStorage.clear();
+    const userToken = await AsyncStorage.getItem('uid');
+    // alert(userToken)
+    // const userToken  = await firebase.auth().currentUser === null ? false : true;
 
     // This will switch to the App screen or Auth screen and this loading
     // screen will be unmounted and thrown away.
-    this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+    this.props.navigation.navigate(userToken || this.props.isLogin ? 'App' : 'Auth');
   };
 
   // Render any loading content that you like here
@@ -39,4 +44,9 @@ const styles = StyleSheet.create({
         alignItems : 'center'
     }
 })
-export default AuthLoadingScreen;
+let mapStateToProps = (state)=>{
+ return {
+    isLogin : state.AuthReducer.isLogin
+ }  
+}
+export default connect(mapStateToProps)(AuthLoadingScreen);

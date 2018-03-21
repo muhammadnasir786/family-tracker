@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import App from './App';
 import { store } from './src/store/index'
 import Login from './src/login';
-import { StackNavigator,TabNavigator ,SwitchNavigator} from 'react-navigation';
+import { StackNavigator, TabNavigator, SwitchNavigator } from 'react-navigation';
 import SignUp from './src/signUp'
 // import { StackNavigator,  } from 'react-navigation';
 import AuthLoadingScreen from './src/authLoading'
@@ -15,59 +15,59 @@ import Circle from "./src/container/circle";
 import AddMember from "./src/container/addmember";
 import Setting from "./src/container/setting";
 
- const OneCircle = StackNavigator({
-     One :{
-         screen : TabNavigator({
-            Members : {
-                screen : Circle
+const OneCircle = StackNavigator({
+    One: {
+        screen: TabNavigator({
+            Members: {
+                screen: Circle,
             },
-            AddMember : {
-                screen : AddMember ,
+            AddMember: {
+                screen: AddMember,
             }
-         })
-     }
- })
- const MainNav = TabNavigator({
-    MyCircle : {
-        screen : MyCircle
+        }) ,
+    } 
+})
+const MainNav = TabNavigator({
+    MyCircle: {
+        screen: MyCircle
     },
-    Requests  : {
-        screen : RequestList
-    } ,
-    Create_Circle : {
-        screen : AddCircle
-    } , 
-    Circle : {
-        screen : OneCircle
+    Requests: {
+        screen: RequestList
     },
-    Setting : {
-        screen : Setting
+    Create_Circle: {
+        screen: AddCircle
+    },
+    Circle: {
+        screen: OneCircle
+    },
+    Setting: {
+        screen: Setting
     }
- }, {
-     initialRouteName : 'MyCircle'
- })
+}, {
+        initialRouteName: 'MyCircle'
+    })
 const Nav = StackNavigator({
-    Login : {
-        screen : Login
+    Login: {
+        screen: Login
     },
-    Register  : {
-        screen : SignUp
-    } ,
-    MainApplication : {
-        screen : MainNav
+    Register: {
+        screen: SignUp
+    },
+    MainApplication: {
+        screen: MainNav
     }
 })
 
-const Root =  SwitchNavigator(
+const Root = SwitchNavigator(
     {
-      AuthLoading: AuthLoadingScreen,
-      App: MainNav,
-      Auth: Nav,
+        AuthLoading: AuthLoadingScreen,
+        App: MainNav,
+        Auth: Nav,
     },
     {
-      initialRouteName: 'AuthLoading',
+        initialRouteName: 'AuthLoading',
     }
-  );
+);
 
 
 
@@ -75,14 +75,14 @@ const Root =  SwitchNavigator(
 
 
 class MainApplication extends React.Component {
-    componentWillReceiveProps(nextPorps){
+    componentWillReceiveProps(nextPorps) {
         // nextPorps.isLogin === true ? this.props.navigation.navigate('MainApplication') : null
-        }
-        render(){
-            // this.props.isLogin === true ? this.props.navigation.navigate('MainApplication') : null
+    }
+    render() {
+        // this.props.isLogin === true ? this.props.navigation.navigate('MainApplication') : null
         return (
             <Provider store={store}>
-                <Root/>
+                <Root />
             </Provider>
         );
     }

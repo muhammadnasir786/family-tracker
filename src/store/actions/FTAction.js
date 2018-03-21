@@ -32,7 +32,7 @@ class FTAction {
             payload: data
         }
     }
-    static updateLocation = () => {
+    static updateLocation = (data) => {
         return {
             type: FTAction.UPDATE_LOCATION,
             payload: data

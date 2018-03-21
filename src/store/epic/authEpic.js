@@ -3,7 +3,7 @@
 import { Observable } from 'rxjs'
 import  AuthAction from "../actions/authAction";
 import FTAction from "../actions/FTAction";
-
+import { AsyncStorage } from 'react-native';
 import * as firebase from 'firebase';
 var config = {
     apiKey: "AIzaSyCvHYXcKCp9din8zSyPS8J9oLQ3t9DtOI8",
@@ -14,7 +14,11 @@ var config = {
     messagingSenderId: "635982839964"
   };
 firebase.initializeApp(config);
+let uid;
 
+AsyncStorage.getItem('uid').then((value) => {
+  uid = (value)
+});
 const ref = firebase.database().ref('/');
 const auth = firebase.auth();
 // let userData ;
@@ -26,7 +30,7 @@ class AuthEpic {
         return action$.ofType(FTAction.ADD_CIRCLE)
             .switchMap(({ payload }) => {
                 return Observable.fromPromise(
-                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/`).push(payload).then(() => {
+                    ref.child(`/users/${uid}/circle/`).push(payload).then(() => {
                         return { type: 'NULL' }
                     })
                 )
@@ -36,7 +40,7 @@ class AuthEpic {
         return action$.ofType(FTAction.ADD_MEMBER)
             .switchMap(({ payload }) => {
                 return Observable.fromPromise(
-                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/${payload.circleKey}/member/`).push(payload.memberObj).then(() => {
+                    ref.child(`/users/${uid}/circle/${payload.circleKey}/member/`).push(payload.email).then(() => {
                         return { type: 'NULL' }
                     })
                 )
@@ -46,7 +50,7 @@ class AuthEpic {
         return action$.ofType(FTAction.UPDATE_LOCATION)
             .switchMap(({ payload }) => {
                 return Observable.fromPromise(
-                    ref.child(`/users/${firebase.auth().currentUser.uid}/location/`).set(payload).then(() => {
+                    ref.child(`/users/${uid}/location/`).set(payload).then(() => {
                         return { type: 'NULL' }
                     })
                 )
@@ -56,7 +60,7 @@ class AuthEpic {
         return action$.ofType(FTAction.ACCEPTED)
             .switchMap(({ payload }) => {
                 return Observable.fromPromise(
-                    ref.child(`/users/${firebase.auth().currentUser.uid}/circle/${payload.circleKey}/member/${payload.memberKey}/isAccepted/`).set(true).then(() => {
+                    ref.child(`/users/${uid}/circle/${payload.circleKey}/member/${payload.memberKey}/isAccepted/`).set(true).then(() => {
                         return { type: 'NULL' }
                     })
                 )
@@ -88,7 +92,6 @@ class AuthEpic {
             })
     }
 
-
         static createUser = (action$)=>{
             let userCreated = false;
             return action$.ofType(AuthAction.CREATE_USER)
@@ -96,7 +99,7 @@ class AuthEpic {
                 return Observable.fromPromise(
                     auth.createUserWithEmailAndPassword(payload.email,payload.password)
                     .then((res)=>{
-                        ref.child(`users/${res.uid}`).set(payload);
+                        ref.child(`users/${res.uid}/userData`).set(payload);
                         userCreated = true;
                         // Action Dispatch for reducer to state change , and component render for 
                         // login OK use flages and dispatch at the bottom .map((x)=>{})
@@ -126,9 +129,11 @@ class AuthEpic {
                         // send  userdata at the end for reducer
                         // ref.child(`users/${res.uid}/`).once('value',(s)=>{
                         //     console.log(s.val())
-                        //     userData = s.val();
+                        //     userData = s.val();      
                         //     console.log(userData)
                         // });
+                       
+                        AsyncStorage.setItem('uid',res.uid);
                         return AuthAction.loginUserSuccessfully()
                     }).catch((err)=>{
                         alert(err.message)
